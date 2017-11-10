@@ -13,7 +13,22 @@ class AlbumsController extends Controller
     return view('albums.create');
   }
   public function store( Request $request ){
-    return 1234;
+    $this->validate($request, [
+      'name' => 'required',
+      'cover_image' => 'image|max:1999'
+    ]);
+    // Get filename with extension
+    $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+    // Get file name
+    $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+    // Get extension
+    $extension = $request->file('cover_image')->getClientOriginalExtension();
+    // Create new filename
+    $filenameToStore = $filename.'_'.time().'.'.$extension;
+    // Upload ImagickPixel
+    $path = $request->file('cover_image')->storeAs('public/album_covers', $filenameToStore);
+    return $path;
   }
+
 
 }
